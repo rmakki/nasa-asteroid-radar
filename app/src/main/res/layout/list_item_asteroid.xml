@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/status_image"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:layout_marginStart="@dimen/padding"
+        android:layout_marginTop="@dimen/padding_small"
+        android:layout_marginBottom="@dimen/padding_small"
+        android:layout_marginEnd="@dimen/padding"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        tools:srcCompat="@drawable/ic_status_normal" />
+
+    <TextView
+        android:id="@+id/asteroid_id"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/txt_view_height"
+        android:layout_marginStart="@dimen/padding"
+        android:layout_marginTop="@dimen/padding_small"
+        android:layout_marginBottom="@dimen/padding_small"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/status_image"
+        app:layout_constraintTop_toTopOf="@+id/status_image"
+        tools:text="Asteroid ID" />
+
+    <TextView
+        android:id="@+id/asteroid_date_approaching"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/txt_view_height"
+        android:layout_marginTop="@dimen/padding_small"
+        app:layout_constraintEnd_toEndOf="@+id/asteroid_id"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/asteroid_id"
+        app:layout_constraintTop_toBottomOf="@+id/asteroid_id"
+        tools:text="Date Approaching" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

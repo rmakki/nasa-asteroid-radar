@@ -19,3 +19,4 @@ class MainViewModel : ViewModel() {
         _asteroidList.value = mutableListOf(Asteroid(543,"Big codename","12/13/2025",2.5,50000.0,2.3,44444.7,true))
     }
 }
+
