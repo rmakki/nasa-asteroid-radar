@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.Util
 import com.udacity.asteroidradar.R
 
 
@@ -25,22 +24,47 @@ class AsteroidAdapter: RecyclerView.Adapter<AsteroidAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
-        holder.asteroid_id.text = item.codename
-        Log.i("Recyle item", item.codename)
+        holder.bind(item)
     }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater
-            .inflate(R.layout.list_item_asteroid, parent, false)
-
-        return ViewHolder(view)
+        return ViewHolder.from(parent)
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    class ViewHolder private constructor (itemView: View) : RecyclerView.ViewHolder(itemView){
         val asteroid_id: TextView = itemView.findViewById(R.id.asteroid_id)
         val asteroid_date_approaching: TextView = itemView.findViewById(R.id.asteroid_date_approaching)
         val asteroid_status_image: ImageView = itemView.findViewById(R.id.status_image)
+
+        fun bind(item: Asteroid) {
+
+            asteroid_id.text = item.codename
+            asteroid_date_approaching.text = item.closeApproachDate
+            if (item.isPotentiallyHazardous) {
+                asteroid_status_image.setImageResource(R.drawable.ic_status_potentially_hazardous)
+            } else {
+                asteroid_status_image.setImageResource(R.drawable.ic_status_normal)
+
+            }
+            Log.i("Recyle item", item.codename)
+        }
+
+        companion object {
+             fun from(parent: ViewGroup): ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val view = layoutInflater
+                    .inflate(R.layout.list_item_asteroid, parent, false)
+
+                return ViewHolder(view)
+            }
+        }
+
+
     }
+
+
+
 
 }
