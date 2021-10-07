@@ -2,20 +2,16 @@ package com.udacity.asteroidradar.main
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.R
+import com.udacity.asteroidradar.databinding.ListItemAsteroidBinding
 
-// class AsteroidAdapter: RecyclerView.Adapter<AsteroidAdapter.ViewHolder>() {
 class AsteroidAdapter: ListAdapter<Asteroid,
         AsteroidAdapter.ViewHolder>(AsteroidDiffCallback()) {
-
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
@@ -26,19 +22,15 @@ class AsteroidAdapter: ListAdapter<Asteroid,
         return ViewHolder.from(parent)
     }
 
-    class ViewHolder private constructor (itemView: View) : RecyclerView.ViewHolder(itemView){
-        val asteroid_id: TextView = itemView.findViewById(R.id.asteroid_id)
-        val asteroid_date_approaching: TextView = itemView.findViewById(R.id.asteroid_date_approaching)
-        val asteroid_status_image: ImageView = itemView.findViewById(R.id.status_image)
+    class ViewHolder private constructor (val binding: ListItemAsteroidBinding) : RecyclerView.ViewHolder(binding.root){
 
         fun bind(item: Asteroid) {
-
-            asteroid_id.text = item.codename
-            asteroid_date_approaching.text = item.closeApproachDate
+            binding.asteroidId.text = item.codename
+            binding.asteroidDateApproaching.text = item.closeApproachDate
             if (item.isPotentiallyHazardous) {
-                asteroid_status_image.setImageResource(R.drawable.ic_status_potentially_hazardous)
+                binding.statusImage.setImageResource(R.drawable.ic_status_potentially_hazardous)
             } else {
-                asteroid_status_image.setImageResource(R.drawable.ic_status_normal)
+                binding.statusImage.setImageResource(R.drawable.ic_status_normal)
 
             }
             Log.i("Recycle item", item.codename)
@@ -47,13 +39,10 @@ class AsteroidAdapter: ListAdapter<Asteroid,
         companion object {
              fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater
-                    .inflate(R.layout.list_item_asteroid, parent, false)
-
-                return ViewHolder(view)
+                val binding = ListItemAsteroidBinding.inflate(layoutInflater, parent, false)
+                return ViewHolder(binding)
             }
         }
-
 
     }
 
@@ -75,8 +64,4 @@ class AsteroidAdapter: ListAdapter<Asteroid,
 
         }
     }
-
-
-
-
 }
