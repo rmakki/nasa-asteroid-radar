@@ -6,14 +6,17 @@
     <data>
         <variable
             name="asteroid"
-            type="com.udacity.asteroidradar.Asteroid" />r
-
+            type="com.udacity.asteroidradar.Asteroid" />
+        <variable
+            name="clickListener"
+            type="com.udacity.asteroidradar.main.AsteroidAdapter.AsteroidListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(asteroid)}">
 
         <ImageView
             android:id="@+id/status_image"
@@ -27,7 +30,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-
             tools:srcCompat="@drawable/ic_status_normal" />
 
         <TextView
