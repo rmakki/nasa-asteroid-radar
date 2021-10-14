@@ -30,6 +30,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:statusIcon="@{asteroid.isPotentiallyHazardous}"
             tools:srcCompat="@drawable/ic_status_normal" />
 
         <TextView
@@ -45,6 +46,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/status_image"
             app:layout_constraintTop_toTopOf="@+id/status_image"
+            android:text="@{asteroid.codename}"
             tools:text="Asteroid ID" />
 
         <TextView
@@ -59,6 +61,8 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/asteroid_id"
             app:layout_constraintTop_toBottomOf="@+id/asteroid_id"
+
+            android:text="@{asteroid.closeApproachDate}"
             tools:text="Date Approaching" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

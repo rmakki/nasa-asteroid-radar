@@ -7,23 +7,46 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.ListItemAsteroidBinding
 
 class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid,
         AsteroidAdapter.ViewHolder>(AsteroidDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        //val item = getItem(position)
-        //holder.bind(item)
-        holder.bind(clickListener,getItem(position)!!)
+        val asteroid = getItem(position)
+        // set OnClick listener of the RV view item
+        holder.itemView.setOnClickListener {
+            clickListener.onClick(asteroid)
+        }
+        holder.bind(asteroid)
+
+        //holder.bind(clickListener,getItem(position)!!)
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder.from(parent)
+        return ViewHolder(ListItemAsteroidBinding
+            .inflate(LayoutInflater.from(parent.context)))
     }
 
+    // ViewHolder for items to display Asteroid records
+    class ViewHolder(private val binding: ListItemAsteroidBinding):
+        RecyclerView.ViewHolder(binding.root) {
+
+        // bind an entry from the data source to the view property
+        fun bind(asteroid: Asteroid) {
+            binding.asteroid = asteroid
+            binding.executePendingBindings()
+            Log.i("Recycler item", asteroid.codename)
+
+        }
+    }
+  /**
+   * Old Implementation below if we are not using BindingAdapters.kt
+   *
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+          return ViewHolder.from(parent)
+    }
     class ViewHolder private constructor (val binding: ListItemAsteroidBinding) : RecyclerView.ViewHolder(binding.root){
 
         fun bind(clickListener: AsteroidListener, item: Asteroid) {
@@ -42,7 +65,7 @@ class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid
 
             binding.executePendingBindings()
 
-            Log.i("Recycle item", item.codename)
+            Log.i("Recycler item", item.codename)
         }
 
         companion object {
@@ -54,11 +77,12 @@ class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid
         }
 
     }
+**/
 
     /**
      * Callback for calculating the diff between two non-null items in a list.
      *
-     * Used by ListAdapter to calculate the minumum number of changes between and old list and a new
+     * Used by ListAdapter to calculate the minimum number of changes between and old list and a new
      * list that's been passed to `submitList`.
      */
 
@@ -74,10 +98,8 @@ class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid
         }
     }
 
-    // The listener class receives a Asteroid object and passes its id field:
-    class AsteroidListener(val clickListener: (asteroidId: Long) -> Unit) {
-        fun onClick(asteroid: Asteroid) = clickListener(asteroid.id)
+    // The listener class receives a Asteroid object and passes it
+    class AsteroidListener(val clickListener: (asteroid: Asteroid) -> Unit) {
+        fun onClick(asteroid: Asteroid) = clickListener(asteroid)
     }
-
-
 }
