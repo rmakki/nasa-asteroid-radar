@@ -61,7 +61,8 @@ class MainFragment : Fragment() {
 
         binding.asteroidRecycler.adapter = adapter
 
-        /** Move to BindingAdapters ?
+         //Move to BindingAdapters ?
+        /**
         viewModel.asteroidList.observe(viewLifecycleOwner, Observer {
 
             it?.let {
@@ -69,6 +70,7 @@ class MainFragment : Fragment() {
             }
         })
         */
+
 
         setHasOptionsMenu(true)
 

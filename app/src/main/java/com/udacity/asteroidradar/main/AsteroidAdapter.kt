@@ -24,9 +24,14 @@ class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid
 
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    /* override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ListItemAsteroidBinding
             .inflate(LayoutInflater.from(parent.context)))
+    } */
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(ListItemAsteroidBinding
+            .inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     // ViewHolder for items to display Asteroid records
