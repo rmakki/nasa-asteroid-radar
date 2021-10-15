@@ -14,20 +14,53 @@ class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val asteroid = getItem(position)
+        holder.bind(clickListener,asteroid)
+
         // set OnClick listener of the RV view item
-        holder.itemView.setOnClickListener {
-            clickListener.onClick(asteroid)
-        }
-        holder.bind(asteroid)
+        //holder.itemView.setOnClickListener {
+        //    clickListener.onClick(asteroid)
+        //}
+        //holder.bind(asteroid)
 
         //holder.bind(clickListener,getItem(position)!!)
 
     }
 
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder.from(parent)
+    }
+    class ViewHolder private constructor (val binding: ListItemAsteroidBinding)
+        : RecyclerView.ViewHolder(binding.root){
+
+        fun bind(clickListener: AsteroidListener, item: Asteroid) {
+
+            binding.asteroid = item
+            binding.clickListener = clickListener
+
+            binding.executePendingBindings()
+
+            Log.i("Recycler item", item.codename)
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ListItemAsteroidBinding.inflate(layoutInflater, parent, false)
+                return ViewHolder(binding)
+            }
+        }
+    }
+
+
+
     /* override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ListItemAsteroidBinding
             .inflate(LayoutInflater.from(parent.context)))
     } */
+
+    /** Pass parent argument so that layout is set correctly within the parent View (in this case RecyclerView) and we pass false for
+        attachToRoot because we are not adding the View immediately and this is done by RecyclerView.
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ListItemAsteroidBinding
@@ -46,6 +79,7 @@ class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid
 
         }
     }
+    */
   /**
    * Old Implementation below if we are not using BindingAdapters.kt
    *
