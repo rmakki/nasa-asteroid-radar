@@ -16,20 +16,12 @@ class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid
         val asteroid = getItem(position)
         holder.bind(clickListener,asteroid)
 
-        // set OnClick listener of the RV view item
-        //holder.itemView.setOnClickListener {
-        //    clickListener.onClick(asteroid)
-        //}
-        //holder.bind(asteroid)
-
-        //holder.bind(clickListener,getItem(position)!!)
-
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
     }
+
     class ViewHolder private constructor (val binding: ListItemAsteroidBinding)
         : RecyclerView.ViewHolder(binding.root){
 
@@ -46,42 +38,18 @@ class AsteroidAdapter(val clickListener: AsteroidListener): ListAdapter<Asteroid
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
+
+                // Pass parent argument so that layout is set correctly within the parent View (in this case RecyclerView) and we pass false for
+                // attachToRoot because we are not adding the View immediately and this is done by RecyclerView.
                 val binding = ListItemAsteroidBinding.inflate(layoutInflater, parent, false)
                 return ViewHolder(binding)
             }
         }
     }
 
-
-
-    /* override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ListItemAsteroidBinding
-            .inflate(LayoutInflater.from(parent.context)))
-    } */
-
-    /** Pass parent argument so that layout is set correctly within the parent View (in this case RecyclerView) and we pass false for
-        attachToRoot because we are not adding the View immediately and this is done by RecyclerView.
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ListItemAsteroidBinding
-            .inflate(LayoutInflater.from(parent.context), parent, false))
-    }
-
-    // ViewHolder for items to display Asteroid records
-    class ViewHolder(private val binding: ListItemAsteroidBinding):
-        RecyclerView.ViewHolder(binding.root) {
-
-        // bind an entry from the data source to the view property
-        fun bind(asteroid: Asteroid) {
-            binding.asteroid = asteroid
-            binding.executePendingBindings()
-            Log.i("Recycler item", asteroid.codename)
-
-        }
-    }
-    */
   /**
    * Old Implementation below if we are not using BindingAdapters.kt
+   * New implementation pulls out the UI code
    *
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
           return ViewHolder.from(parent)

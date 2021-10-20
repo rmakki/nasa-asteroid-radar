@@ -6,8 +6,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.main.AsteroidAdapter
 
-// layout properties with attribute <... app:listData ...> call upon this code
-// ... this binds the data provided by the AsteroidRecyclerAdapter to the RV view element
+// layout attribute app:listData
 @BindingAdapter("listData")
 fun bindRecyclerView(recyclerView: RecyclerView, data: List<Asteroid>?) {
     val adapter = recyclerView.adapter as AsteroidAdapter

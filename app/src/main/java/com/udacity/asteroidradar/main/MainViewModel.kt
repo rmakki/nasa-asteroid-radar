@@ -5,6 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.network.AsteroidApi
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainViewModel : ViewModel() {
 
@@ -65,8 +69,28 @@ class MainViewModel : ViewModel() {
 
 
     init {
+
+        getAsteroids()
+        // Hardcoded for now until I retrieve from Network and convert from Json to Object successfully
         _asteroidList.value = ArrayList()
         _asteroidList.value = mutableListOf(Asteroid(543,"Big codename","12/13/2025",2.5,50000.0,2.3,44444.7,true))
+    }
+
+    /**
+     * Retrieve the Asteroid List via network and set the Livedata
+     */
+    private fun getAsteroids() {
+        AsteroidApi.retrofitService.getAsteroids("2021-10-20","2021-10-27","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij").enqueue( object:
+            Callback<List<Asteroid>> {
+            override fun onFailure(call: Call<List<Asteroid>>, t: Throwable) {
+                Log.e("Network Failure : ",  t.stackTraceToString())
+            }
+
+            override fun onResponse(call: Call<List<Asteroid>>, response: Response<List<Asteroid>>) {
+                Log.i("Asteroids size retrieved: ",  response.body()?.size.toString())
+                //Log.i("Asteroids : ",  response.body().toString())
+            }
+        })
     }
 
     /*

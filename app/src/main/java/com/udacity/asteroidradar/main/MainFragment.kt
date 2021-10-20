@@ -2,8 +2,6 @@ package com.udacity.asteroidradar.main
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,7 +9,6 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
-import kotlinx.android.synthetic.main.list_item_asteroid.*
 
 class MainFragment : Fragment() {
 
@@ -25,9 +22,6 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        //val binding: FragmentMainBinding = DataBindingUtil.inflate(
-        //    inflater, R.layout.fragment_main, container, false)
-        //binding.lifecycleOwner = this
 
         binding = FragmentMainBinding.inflate(inflater, container, false )
         // scoped to the lifecycle of this Fragment
@@ -35,22 +29,20 @@ class MainFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-
+        /**
         viewModel.navigateToAsteroidDetails.observe(viewLifecycleOwner, Observer {
             if ( null != it ) {
                 this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
                 viewModel.doneNavigatingToAsteroidDetails()
             }
-        })
-        /**
-        viewModel.navigateToAsteroidDetails.observe(viewLifecycleOwner, Observer {asteroid ->
-            id?.let {
-                this.findNavController().navigate(MainFragmentDirections.actionShowDetail(asteroid))
-                //                 this.findNavController().navigate(MainFragmentDirections.actionShowDetail(viewModel.navigateToAsteroid.value))
+        }) */
+
+        viewModel.navigateToAsteroidDetails.observe(viewLifecycleOwner, Observer { it ->
+            it?.let {
+                this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
                 viewModel.doneNavigatingToAsteroidDetails()
             }
         })
-        */
 
         // pass the asteroid object to the viewmodel
         val adapter = AsteroidAdapter(AsteroidAdapter.AsteroidListener {
@@ -61,7 +53,7 @@ class MainFragment : Fragment() {
 
         binding.asteroidRecycler.adapter = adapter
 
-         //Move to BindingAdapters ?
+         //Moved to BindingAdapters
         /**
         viewModel.asteroidList.observe(viewLifecycleOwner, Observer {
 
@@ -70,7 +62,6 @@ class MainFragment : Fragment() {
             }
         })
         */
-
 
         setHasOptionsMenu(true)
 
