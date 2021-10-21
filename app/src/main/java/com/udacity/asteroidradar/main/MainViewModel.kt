@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.network.AsteroidApi
-import retrofit2.Call
-import retrofit2.Callback
+import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class MainViewModel : ViewModel() {
@@ -80,6 +80,27 @@ class MainViewModel : ViewModel() {
      * Retrieve the Asteroid List via network and set the Livedata
      */
     private fun getAsteroids() {
+        viewModelScope.launch {
+            try {
+                // Suspend function call
+                var listResult = AsteroidApi.retrofitServiceScalar.getAsteroids("2021-10-20","2021-10-27","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
+                Log.i("Asteroids retrieved: ",  listResult.body().toString())
+
+            } catch (e: Exception) {
+                Log.e("Failure : ", e.stackTraceToString())
+            }
+        }
+    }
+    /**
+    There is no need to override onCleared() function that cancels the Job when the ViewModel is finished. This step is not required anymore
+    */
+
+    /**
+     * Deprecated Callback code. Retrofit 2.6 has built in support for Coroutines.
+     * No need for Callback and enqueue or the Jake Wharton adapter anymore. See above
+     * */
+    /*
+    private fun getAsteroids() {
         AsteroidApi.retrofitService.getAsteroids("2021-10-20","2021-10-27","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij").enqueue( object:
             Callback<List<Asteroid>> {
             override fun onFailure(call: Call<List<Asteroid>>, t: Throwable) {
@@ -92,6 +113,7 @@ class MainViewModel : ViewModel() {
             }
         })
     }
+    */
 
     /*
     private val _navigateToAsteroidDetails = MutableLiveData<Long>()

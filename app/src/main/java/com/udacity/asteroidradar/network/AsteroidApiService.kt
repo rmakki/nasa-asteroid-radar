@@ -8,6 +8,7 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 //import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -25,8 +26,8 @@ private val moshi = Moshi.Builder()
  * object pointing to the desired URL
  */
 private val retrofit = Retrofit.Builder()
-    //.addConverterFactory(ScalarsConverterFactory.create()) // to help convert the complex json to String
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .addConverterFactory(ScalarsConverterFactory.create()) // to help convert the complex json to String
+    //.addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(Constants.BASE_URL)
     .build()
 
@@ -34,32 +35,24 @@ private val retrofit = Retrofit.Builder()
  * A public interface that exposes the [getAsteroids] method
  */
 interface AsteroidApiService {
+
     /**
-     * Returns a Retrofit callback that delivers a String
-     * The @GET annotation indicates that the "realestate" endpoint will be requested with the GET
-     * HTTP method
-     */
-
-    @GET("${Constants.NEOWS_API_URL}/feed")
-    fun getAsteroids(
-        @Query("start_date") startDate: String,
-        @Query("end_date") endDate: String,
-        @Query("api_key") apiKey: String,
-    ): Call<List<Asteroid>>
-
-    // Work towards suspend function next iteration
-    /*
+     * Returns list of asteroids in json format. Returning String because we have to manually parse
+     * (data too complex for Moshi to parse into an POJO)
+    */
     @GET("${Constants.NEOWS_API_URL}/feed")
     suspend fun getAsteroids(
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
         @Query("api_key") apiKey: String,
-    ): Response<String> */
+    ): Response<String>
+
 }
 
 /**
  * A public Api object that exposes the lazy-initialized Retrofit service
  */
 object AsteroidApi {
-    val retrofitService : AsteroidApiService by lazy { retrofit.create(AsteroidApiService::class.java) }
+    val retrofitServiceScalar : AsteroidApiService by lazy {
+        retrofit.create(AsteroidApiService::class.java) }
 }
