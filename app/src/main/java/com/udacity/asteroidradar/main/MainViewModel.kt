@@ -6,8 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.network.AsteroidApi
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import retrofit2.Response
 
 class MainViewModel : ViewModel() {
@@ -67,7 +69,6 @@ class MainViewModel : ViewModel() {
     val asteroidList: LiveData<List<Asteroid>>
         get() = _asteroidList
 
-
     init {
 
         getAsteroids()
@@ -82,9 +83,14 @@ class MainViewModel : ViewModel() {
     private fun getAsteroids() {
         viewModelScope.launch {
             try {
-                // Suspend function call
-                var listResult = AsteroidApi.retrofitServiceScalar.getAsteroids("2021-10-20","2021-10-27","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
-                Log.i("Asteroids retrieved: ",  listResult.body().toString())
+                // Suspend function call - Hardcoded Query params values for now
+                var response = AsteroidApi.retrofitServiceScalar.getAsteroids("2021-10-20","2021-10-27","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
+                Log.i("Asteroids retrieved: ",  response.body().toString())
+
+                // network data
+                val netAsteroidData =
+                    parseAsteroidsJsonResult(JSONObject(response.body()!!))
+                Log.i("POJO size of Asteroids retrieved: ", netAsteroidData.size.toString())
 
             } catch (e: Exception) {
                 Log.e("Failure : ", e.stackTraceToString())
