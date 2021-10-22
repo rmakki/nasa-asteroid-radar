@@ -10,6 +10,8 @@ import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.api.getDownloadDates
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.network.AsteroidApi
+import com.udacity.asteroidradar.network.NetworkAsteroidContainer
+import com.udacity.asteroidradar.network.asDomainModel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Response
@@ -106,11 +108,12 @@ class MainViewModel : ViewModel() {
                 var response = AsteroidApi.retrofitServiceScalar.getAsteroids(today,nextWeek,"3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
 
                 Log.i("Asteroids retrieved: ",  response.body().toString())
-
+                val astroidList = NetworkAsteroidContainer(response.body().toString()).asDomainModel()
+                Log.i("POJO size of Asteroids retrieved:", astroidList.size.toString())
                 // network data
-                val netAsteroidData =
-                    parseAsteroidsJsonResult(JSONObject(response.body()!!))
-                Log.i("POJO size of Asteroids retrieved: ", netAsteroidData.size.toString())
+                //val netAsteroidData =
+                //    parseAsteroidsJsonResult(JSONObject(response.body()!!))
+                //Log.i("POJO size of Asteroids retrieved: ", netAsteroidData.size.toString())
 
             } catch (e: Exception) {
                 Log.e("Failure : ", e.stackTraceToString())

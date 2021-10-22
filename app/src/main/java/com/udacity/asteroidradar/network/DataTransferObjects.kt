@@ -1,12 +1,36 @@
 package com.udacity.asteroidradar.network
 
+import android.util.Log
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.database.DatabaseAsteroid
+import org.json.JSONObject
 
-class DataTransferObjects {
+/**
+ * DataTransferObjects go in this file. These are responsible for parsing responses from the server
+ * or formatting objects to send to the server. You should convert these to domain objects before
+ * using them.
+ */
+
+/**
+ Represents the  json String fetched from the server via network
+ */
+data class NetworkAsteroidContainer(val strNetworkAsteroidList: String)
+
+/**
+ * Convert Network results to a Domain object - List<Asteroid>
+ */
+fun NetworkAsteroidContainer.asDomainModel(): List<Asteroid> {
+    // network data
+    val netAsteroidData =
+        parseAsteroidsJsonResult(JSONObject(strNetworkAsteroidList))
+    Log.i("POJO size of Asteroids retrieved: ", netAsteroidData.size.toString())
+    return netAsteroidData
 }
 
-// convert from network data transfer object to database object
+/**
+ * Convert Domain object to Database Entity
+ */
 fun List<Asteroid>.asDatabaseModel(): List<DatabaseAsteroid> {
     return map {
         DatabaseAsteroid (
