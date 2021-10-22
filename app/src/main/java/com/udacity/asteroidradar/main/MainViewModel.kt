@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.api.getDownloadDates
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.network.AsteroidApi
@@ -65,10 +66,15 @@ class MainViewModel : ViewModel() {
     fun doneNavigatingToAsteroidDetails() {
         _navigateToAsteroidDetails.value = null
     }
-
+    // Live data to Asteroid List
     private val _asteroidList = MutableLiveData<List<Asteroid>>()
     val asteroidList: LiveData<List<Asteroid>>
         get() = _asteroidList
+
+    // LiveData for Astronomy Picture of the Day APOD
+    private val _apod= MutableLiveData<PictureOfDay?>()
+    val apod: LiveData<PictureOfDay?>
+        get() = _apod
 
     init {
 
@@ -111,6 +117,9 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+
+
+
     /**
     There is no need to override onCleared() function that cancels the Job when the ViewModel is finished. This step is not required anymore
     */

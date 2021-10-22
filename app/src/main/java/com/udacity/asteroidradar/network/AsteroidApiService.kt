@@ -4,6 +4,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.PictureOfDay
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -22,12 +23,22 @@ private val moshi = Moshi.Builder()
     .build()
 
 /**
- * Use the Retrofit builder to build a retrofit object using a Moshi converter with our Moshi
- * object pointing to the desired URL
+ * Use the Retrofit builder to build a retrofit object using a Scalar converter.
+ * Use this to fetch the complex Nasa json as a String
  */
-private val retrofit = Retrofit.Builder()
+private val retrofitScalar = Retrofit.Builder()
     .addConverterFactory(ScalarsConverterFactory.create()) // to help convert the complex json to String
     //.addConverterFactory(MoshiConverterFactory.create(moshi))
+    .baseUrl(Constants.BASE_URL)
+    .build()
+
+/**
+ * Use the Retrofit builder to build a retrofit object using a Moshi converter with our Moshi
+ * object. Use this to retrive image of the day
+ */
+
+private val retrofitMoshi = Retrofit.Builder()
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(Constants.BASE_URL)
     .build()
 
@@ -47,6 +58,14 @@ interface AsteroidApiService {
         @Query("api_key") apiKey: String,
     ): Response<String>
 
+    /**
+     * Returns the picture of the Day object
+     */
+    @GET(Constants.APOD_API_URL)
+    suspend fun getPictureOfDay(
+        @Query("api_key") apiKey: String,
+    ): Response<PictureOfDay>
+
 }
 
     /**
@@ -54,10 +73,15 @@ interface AsteroidApiService {
      */
     object AsteroidApi {
     val retrofitServiceScalar : AsteroidApiService by lazy {
-        retrofit.create(AsteroidApiService::class.java)
+        retrofitScalar.create(AsteroidApiService::class.java)
+        }
+        val retrofitMoshiService : AsteroidApiService by lazy {
+            retrofitMoshi.create(AsteroidApiService::class.java)
+        }
+
     }
 
 
-}
+
 
 
