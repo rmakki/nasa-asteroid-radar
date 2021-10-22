@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.api.getDownloadDates
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.network.AsteroidApi
 import kotlinx.coroutines.launch
@@ -81,10 +82,23 @@ class MainViewModel : ViewModel() {
      * Retrieve the Asteroid List via network and set the Livedata
      */
     private fun getAsteroids() {
+
+        // define upcoming week
+        var nextWeekDates: ArrayList<String>
+        var today: String
+        var nextWeek: String
+
+        // Array of today + next 7 days
+        nextWeekDates = getDownloadDates()
+        today = nextWeekDates[0]    // date today
+        nextWeek = nextWeekDates[1] // date one week from today
+
         viewModelScope.launch {
             try {
                 // Suspend function call - Hardcoded Query params values for now
-                var response = AsteroidApi.retrofitServiceScalar.getAsteroids("2021-10-20","2021-10-27","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
+                //var response = AsteroidApi.retrofitServiceScalar.getAsteroids("2021-10-22","2021-10-29","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
+                var response = AsteroidApi.retrofitServiceScalar.getAsteroids(today,nextWeek,"3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
+
                 Log.i("Asteroids retrieved: ",  response.body().toString())
 
                 // network data

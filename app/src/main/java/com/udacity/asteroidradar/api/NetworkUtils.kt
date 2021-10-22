@@ -1,5 +1,6 @@
 package com.udacity.asteroidradar.api
 
+import android.annotation.SuppressLint
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import org.json.JSONObject
@@ -42,7 +43,8 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
     return asteroidList
 }
 
-public fun getNextSevenDaysFormattedDates(): ArrayList<String> {
+@SuppressLint("WeekBasedYear")
+private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     val formattedDateList = ArrayList<String>()
 
     val calendar = Calendar.getInstance()
@@ -55,4 +57,22 @@ public fun getNextSevenDaysFormattedDates(): ArrayList<String> {
 
     return formattedDateList
 }
+
+// Generate formatted start_date, end_date to pass to GET Query
+@SuppressLint("WeekBasedYear")
+fun getDownloadDates(): ArrayList<String> {
+    val formattedDateList = ArrayList<String>()
+
+    val calendar = Calendar.getInstance()
+
+    for (i in 1..2) {
+        val currentTime = calendar.time
+        val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+        formattedDateList.add(dateFormat.format(currentTime))
+        calendar.add(Calendar.DAY_OF_YEAR, Constants.DEFAULT_END_DATE_DAYS)
+    }
+
+    return formattedDateList
+}
+
 
