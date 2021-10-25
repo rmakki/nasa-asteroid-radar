@@ -31,6 +31,21 @@ fun NetworkAsteroidContainer.asDomainModel(): List<Asteroid> {
 /**
  * Convert Domain object to Database Entity
  */
+fun List<Asteroid>.asDatabaseModel(): Array<DatabaseAsteroid> {
+    return map {
+        DatabaseAsteroid (
+            id = it.id,
+            codename = it.codename,
+            closeApproachDate = it.closeApproachDate,
+            absoluteMagnitude = it.absoluteMagnitude,
+            estimatedDiameter = it.estimatedDiameter,
+            relativeVelocity = it.relativeVelocity,
+            distanceFromEarth = it.distanceFromEarth,
+            isPotentiallyHazardous = it.isPotentiallyHazardous,
+        )
+    }.toTypedArray()
+}
+/** old
 fun List<Asteroid>.asDatabaseModel(): List<DatabaseAsteroid> {
     return map {
         DatabaseAsteroid (
@@ -45,3 +60,4 @@ fun List<Asteroid>.asDatabaseModel(): List<DatabaseAsteroid> {
         )
     }
 }
+*/

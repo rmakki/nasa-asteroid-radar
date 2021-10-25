@@ -6,5 +6,6 @@ object Constants {
     const val BASE_URL = "https://api.nasa.gov/"
     const val NEOWS_API_URL = "neo/rest/v1"
     const val APOD_API_URL = "planetary/apod"
+    const val NASA_API_KEY = "3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij"
 
 }
