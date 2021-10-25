@@ -28,13 +28,12 @@ private val moshi = Moshi.Builder()
  */
 private val retrofitScalar = Retrofit.Builder()
     .addConverterFactory(ScalarsConverterFactory.create()) // to help convert the complex json to String
-    //.addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(Constants.BASE_URL)
     .build()
 
 /**
  * Use the Retrofit builder to build a retrofit object using a Moshi converter with our Moshi
- * object. Use this to retrive image of the day
+ * object. Use this to retrieve image of the day
  */
 
 private val retrofitMoshi = Retrofit.Builder()
