@@ -42,11 +42,10 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
      */
     suspend fun refreshAsteroids() {
         withContext(Dispatchers.IO) {
-            //val asteroidlist = AsteroidApi.retrofitServiceScalar.getAsteroids().await()
-            //database.asteroidDao.insertAll(*asteroidlist.asDatabaseModel())
+
                 try {
                     // Suspend function call - Fetch from Network
-                    //var response = AsteroidApi.retrofitServiceScalar.getAsteroids("2021-10-22","2021-10-29","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
+                        // val response = AsteroidApi.retrofitServiceScalar.getAsteroids("2021-10-22","2021-10-29",Constants.NASA_API_KEY)
                     val response = AsteroidApi.retrofitServiceScalar
                         .getAsteroids(today,nextWeek, Constants.NASA_API_KEY)
                     if (response.isSuccessful) {
@@ -55,13 +54,9 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
                         var asteroidList =
                             NetworkAsteroidContainer(response.body().toString()).asDomainModel()
                         Log.i("POJO size of Asteroids retrieved:", asteroidList.size.toString())
-
+                        // Write to the cash
                         database.asteroidDao.insertAll(*asteroidList.asDatabaseModel())
 
-                    // network data
-                        //val netAsteroidData =
-                        //    parseAsteroidsJsonResult(JSONObject(response.body()!!))
-                        //Log.i("POJO size of Asteroids retrieved: ", netAsteroidData.size.toString())
                     } else {
                         Log.e("Network response problem : ", response.message() )
                     }
@@ -104,12 +99,32 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
                 }
     }
 
-    /**
-     * A list of all asteroids that can be shown on the screen - Did the function above instead
-     */
+    // A list of all asteroids that can be shown on the screen - Did the function above instead
     //val asteroids: LiveData<List<Asteroid>> =
     //    Transformations.map(database.asteroidDao.getAllAsteroids()) {
     //        it.asDomainModel()
     //    }
 
 }
+
+
+
+/**
+ * Deprecated Callback code. Retrofit 2.6 has built in support for Coroutines.
+ * No need for Callback and enqueue or the Jake Wharton adapter anymore. See above
+ * */
+/*
+private fun getAsteroids() {
+    AsteroidApi.retrofitService.getAsteroids("2021-10-20","2021-10-27","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij").enqueue( object:
+        Callback<List<Asteroid>> {
+        override fun onFailure(call: Call<List<Asteroid>>, t: Throwable) {
+            Log.e("Network Failure : ",  t.stackTraceToString())
+        }
+
+        override fun onResponse(call: Call<List<Asteroid>>, response: Response<List<Asteroid>>) {
+            Log.i("Asteroids size retrieved: ",  response.body()?.size.toString())
+            //Log.i("Asteroids : ",  response.body().toString())
+        }
+    })
+}
+*/

@@ -1,22 +1,25 @@
 package com.udacity.asteroidradar.main
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.app.Application
+import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.PictureOfDay
-import com.udacity.asteroidradar.api.getDownloadDates
-import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
-import com.udacity.asteroidradar.network.AsteroidApi
-import com.udacity.asteroidradar.network.NetworkAsteroidContainer
-import com.udacity.asteroidradar.network.asDomainModel
+import com.udacity.asteroidradar.database.getDatabase
+import com.udacity.asteroidradar.repository.AsteroidsRepository
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import retrofit2.Response
 
-class MainViewModel : ViewModel() {
+
+/**
+ * MainViewModel designed to store and manage UI-related data in a lifecycle conscious way. This
+ * allows data to survive configuration changes such as screen rotations. In addition, background
+ * work such as fetching network results can continue through configuration changes and deliver
+ * results after the new Fragment or Activity is available.
+ *
+ * @param application The application that this viewmodel is attached to, it's safe to hold a
+ * reference to applications across rotation since Application is never recreated during actiivty
+ * or fragment lifecycle events.
+ */
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * Request a toast by setting this value to true.
@@ -43,10 +46,10 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * Variable that tells the Fragment to navigate to [AsteroidFragment]
+     * Variable that tells the Fragment to navigate to [.detail.DetailFragment]
      *
      * This is private because we don't want to expose setting this value to the Fragment.
-     * If this is non-null, immediately navigate to [AsteroidFragment] and call [onAsteroidDetailsClicked]
+     * If this is non-null, immediately navigate to [.detail.DetailFragment] and call [onAsteroidDetailsClicked]
 
      */
 
@@ -60,7 +63,7 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * Call this immediately after navigating to [AsteroidFragment]
+     * Call this immediately after navigating to [.detail.DetailFragment]
      *
      * It will clear the navigation request, so if the user rotates their phone it won't navigate
      * twice.
@@ -68,97 +71,49 @@ class MainViewModel : ViewModel() {
     fun doneNavigatingToAsteroidDetails() {
         _navigateToAsteroidDetails.value = null
     }
-    // Live data to Asteroid List
-    private val _asteroidList = MutableLiveData<List<Asteroid>>()
-    val asteroidList: LiveData<List<Asteroid>>
-        get() = _asteroidList
 
-    // LiveData for Astronomy Picture of the Day APOD
+
+    private val database = getDatabase(application)
+    private val asteroidsRepository = AsteroidsRepository(database)
+
+    /**
+     * init{} is called immediately when this ViewModel is created.
+     */
+    init {
+        viewModelScope.launch {
+            asteroidsRepository.refreshAsteroids()
+        }
+    }
+
+    // LiveData to AsteroidList, displays Asteroids from Today onwards when user open the app
+    val asteroidList = asteroidsRepository.getAsteroidsApproachingToday()
+
+    // Live data to Asteroid List - old code
+    //private val _asteroidList = MutableLiveData<List<Asteroid>>()
+    //val asteroidList: LiveData<List<Asteroid>>
+    //    get() = _asteroidList
+
+    // TODO - LiveData for Astronomy Picture of the Day APOD
     private val _apod= MutableLiveData<PictureOfDay?>()
     val apod: LiveData<PictureOfDay?>
         get() = _apod
 
-    init {
-
-        getAsteroids()
-        // Hardcoded for now until I retrieve from Network and convert from Json to Object successfully
-        _asteroidList.value = ArrayList()
-        _asteroidList.value = mutableListOf(Asteroid(543,"Big codename","12/13/2025",2.5,50000.0,2.3,44444.7,true))
-    }
 
     /**
-     * Retrieve the Asteroid List via network and set the Livedata
+     * Factory for constructing DevByteViewModel with parameter
      */
-    private fun getAsteroids() {
-
-        // define upcoming week
-        var nextWeekDates: ArrayList<String>
-        var today: String
-        var nextWeek: String
-
-        // Array of today + next 7 days
-        nextWeekDates = getDownloadDates()
-        today = nextWeekDates[0]    // date today
-        nextWeek = nextWeekDates[1] // date one week from today
-
-        viewModelScope.launch {
-            try {
-                // Suspend function call - Hardcoded Query params values for now
-                //var response = AsteroidApi.retrofitServiceScalar.getAsteroids("2021-10-22","2021-10-29","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
-                var response = AsteroidApi.retrofitServiceScalar.getAsteroids(today,nextWeek,"3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij")
-
-                Log.i("Asteroids retrieved: ",  response.body().toString())
-                val astroidList = NetworkAsteroidContainer(response.body().toString()).asDomainModel()
-                Log.i("POJO size of Asteroids retrieved:", astroidList.size.toString())
-                // network data
-                //val netAsteroidData =
-                //    parseAsteroidsJsonResult(JSONObject(response.body()!!))
-                //Log.i("POJO size of Asteroids retrieved: ", netAsteroidData.size.toString())
-
-            } catch (e: Exception) {
-                Log.e("Failure : ", e.stackTraceToString())
+    class Factory(val app: Application) : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return MainViewModel(app) as T
             }
+            throw IllegalArgumentException("Unable to construct viewmodel")
         }
     }
 
 
 
-    /**
-    There is no need to override onCleared() function that cancels the Job when the ViewModel is finished. This step is not required anymore
-    */
 
-    /**
-     * Deprecated Callback code. Retrofit 2.6 has built in support for Coroutines.
-     * No need for Callback and enqueue or the Jake Wharton adapter anymore. See above
-     * */
-    /*
-    private fun getAsteroids() {
-        AsteroidApi.retrofitService.getAsteroids("2021-10-20","2021-10-27","3Ece5JvM6wnEUGZP8Xn1sWlNg1q1cZPdSwBvAFij").enqueue( object:
-            Callback<List<Asteroid>> {
-            override fun onFailure(call: Call<List<Asteroid>>, t: Throwable) {
-                Log.e("Network Failure : ",  t.stackTraceToString())
-            }
-
-            override fun onResponse(call: Call<List<Asteroid>>, response: Response<List<Asteroid>>) {
-                Log.i("Asteroids size retrieved: ",  response.body()?.size.toString())
-                //Log.i("Asteroids : ",  response.body().toString())
-            }
-        })
-    }
-    */
-
-    /*
-    private val _navigateToAsteroidDetails = MutableLiveData<Long>()
-    val navigateToAsteroidDetails
-        get() = _navigateToAsteroidDetails
-
-    fun onAsteroidDetailsClicked(id: Long) {
-        _navigateToAsteroidDetails.value = id
-    }
-
-    fun onAsteroidDetailsNavigated() {
-        _navigateToAsteroidDetails.value = null
-    }
-**/
 }
 

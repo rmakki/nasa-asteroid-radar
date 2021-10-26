@@ -67,18 +67,18 @@ interface AsteroidApiService {
 
 }
 
-    /**
-     * A public Api object that exposes the lazy-initialized Retrofit service
-     */
-    object AsteroidApi {
-    val retrofitServiceScalar : AsteroidApiService by lazy {
-        retrofitScalar.create(AsteroidApiService::class.java)
-        }
-        val retrofitMoshiService : AsteroidApiService by lazy {
-            retrofitMoshi.create(AsteroidApiService::class.java)
-        }
-
+/**
+ * A public Api object that exposes the lazy-initialized Retrofit service
+ */
+object AsteroidApi {
+val retrofitServiceScalar : AsteroidApiService by lazy {
+    retrofitScalar.create(AsteroidApiService::class.java)
     }
+    val retrofitMoshiService : AsteroidApiService by lazy {
+        retrofitMoshi.create(AsteroidApiService::class.java)
+    }
+
+}
 
 
 
