@@ -15,9 +15,13 @@ class MainFragment : Fragment() {
 
     private lateinit var binding: FragmentMainBinding
 
-
     private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
+        //ViewModelProvider(this).get(MainViewModel::class.java)
+        val activity = requireNotNull(this.activity) {
+            "You can only access the viewModel after onViewCreated()"
+        }
+        ViewModelProvider(this,MainViewModel.Factory((activity.application))).get(MainViewModel::class.java)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

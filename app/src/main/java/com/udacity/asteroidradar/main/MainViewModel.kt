@@ -93,7 +93,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var filter: MutableLiveData<String> = MutableLiveData(Constants.FILTER_WEEK)
 
     /**
-     * LiveData to AsteroidList, displays Asteroids from Today onwards (from the cache)as default when user opens the app
+     * LiveData to AsteroidList, displays Asteroids from Today onwards (from the cahe)as default when user opens the app
      * Every time user selects from Menu, lambda function is triggered and asteroidList is updated
      * Since asteroidList is a LiveData, then observers of the asteroidList- UI/RV - gets updated
     */
