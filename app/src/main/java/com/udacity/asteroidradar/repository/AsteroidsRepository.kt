@@ -2,23 +2,32 @@ package com.udacity.asteroidradar.repository
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.database.AsteroidsDatabase
 import com.udacity.asteroidradar.database.asDomainModel
 import com.udacity.asteroidradar.network.AsteroidApi
 import com.udacity.asteroidradar.network.NetworkAsteroidContainer
 import com.udacity.asteroidradar.network.asDomainModel
 import com.udacity.asteroidradar.api.getDownloadDates
+import com.udacity.asteroidradar.network.AsteroidApi.retrofitMoshiService
 import com.udacity.asteroidradar.network.asDatabaseModel
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
+import retrofit2.Response
 
 
 // Pass DB in constructor to avoid memory leaks. Dependency injection
 class AsteroidsRepository(private val database: AsteroidsDatabase) {
+
+    // LiveData for Astronomy Picture of the Day
+    private val _apod= MutableLiveData<PictureOfDay>()
+    val apod: LiveData<PictureOfDay>
+        get() = _apod
 
     // define upcoming week
     private var nextWeekDates: ArrayList<String>
@@ -30,6 +39,8 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
         nextWeekDates = getDownloadDates()
         today = nextWeekDates[0]    // date today
         nextWeek = nextWeekDates[1] // date one week from today
+
+        //_apod.postValue(PictureOfDay("","",""))
     }
     /**
      * Refresh the asteroids stored in the offline cache.
@@ -67,23 +78,22 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
         }
     }
 
-
     /**
      * All asteroids approaching Starting today
      */
     fun getAsteroidsStartToday(): LiveData<List<Asteroid>> {
+        Log.i("getAsteroidsStartToday", "Get Asteroids Week from DB")
+
         return Transformations.map(database.asteroidDao.getAsteroidsAfterDate(today)) {
             it.asDomainModel()
         }
-        //return database.asteroidDao.getAsteroidsAfterDate(today).map {
-        //    it.asDomainModel()
-        //}
     }
 
     /**
      * All asteroids approaching today
      */
     fun getAsteroidsApproachingToday(): LiveData<List<Asteroid>> {
+        Log.i("getAsteroidsApproachingToday", "Get Asteroids Today from DB")
         return Transformations.map(database.asteroidDao.getAsteroidsToday(today)) {
             it.asDomainModel()
         }
@@ -93,10 +103,51 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
      * Get all asteroids
      */
     fun getAsteroidsAll(): LiveData<List<Asteroid>> {
-
+        Log.i("getAsteroidsAll", "Get All Asteroids from DB")
         return Transformations.map(database.asteroidDao.getAllAsteroids()) {
                     it.asDomainModel()
                 }
+    }
+
+    /**
+     * Refresh Astronomy Picture of the Day apod in the offline cache.
+     *
+     */
+    suspend fun refreshPictureOfTheDay() {
+
+        // send GET request to server - coroutine to avoid blocking the UI thread
+        withContext(Dispatchers.IO) {
+
+            // set initial status
+            //_statusApod.postValue(NetApiStatus.LOADING)
+
+            // Network request
+            try{
+                // GET
+                Log.i("Refresh apod : ","Refresh apod - sending GET request")
+                val response: Response<PictureOfDay> =
+                    retrofitMoshiService.getPictureOfDay(Constants.NASA_API_KEY)
+
+
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        Log.i("apod retrieved: ", response.body().toString())
+                        _apod.postValue(it)
+                    }
+                }
+
+                // set status to keep UI updated
+                //_statusApod.postValue(NetApiStatus.DONE)
+                Log.i("Refresh apod: ","apod GET request success")
+
+            } catch (e: Exception) {
+
+                // error
+                //_apod.postValue(null)
+               // _statusApod.postValue(NetApiStatus.ERROR)
+                Log.i("Refresh apod Exception: ", e.stackTraceToString())
+            }
+        }
     }
 
     // A list of all asteroids that can be shown on the screen - Did the function above instead
@@ -106,8 +157,6 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
     //    }
 
 }
-
-
 
 /**
  * Deprecated Callback code. Retrofit 2.6 has built in support for Coroutines.

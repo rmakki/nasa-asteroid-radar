@@ -4,7 +4,28 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.main.AsteroidAdapter
+
+// layout properties app:apodImage
+@BindingAdapter("apodImage")
+fun bindImage(imageView: ImageView, apod: PictureOfDay?) {
+    if (apod != null) {
+        Picasso.get()
+            .load(apod.url)
+            .placeholder(R.drawable.placeholder_picture_of_day)
+            .into(imageView)
+        imageView.contentDescription = apod.title
+    } else {
+        imageView.setImageResource(R.drawable.placeholder_picture_of_day)
+    }
+
+    //Picasso.get()
+    //     .load(url)
+    //     .resize(50, 50)
+    //     .centerCrop()
+    //     .into(imageView)
+}
 
 // layout attribute app:listData
 @BindingAdapter("listData")

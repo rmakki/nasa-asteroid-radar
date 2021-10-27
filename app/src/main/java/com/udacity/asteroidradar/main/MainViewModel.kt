@@ -73,7 +73,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _navigateToAsteroidDetails.value = null
     }
 
-
     private val database = getDatabase(application)
     private val asteroidsRepository = AsteroidsRepository(database)
 
@@ -82,37 +81,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     init {
         viewModelScope.launch {
+            // refresh astroidList from net
             asteroidsRepository.refreshAsteroids()
+            // refresh apod  from net
+            asteroidsRepository.refreshPictureOfTheDay()
         }
+
+
     }
    // Filter initialized to one week from today
     var filter: MutableLiveData<String> = MutableLiveData(Constants.FILTER_WEEK)
 
     /**
-     * LiveData to AsteroidList, displays Asteroids from Today onwards as default when user opens the app
+     * LiveData to AsteroidList, displays Asteroids from Today onwards (from the cache)as default when user opens the app
      * Every time user selects from Menu, lambda function is triggered and asteroidList is updated
      * Since asteroidList is a LiveData, then observers of the asteroidList- UI/RV - gets updated
     */
-    // Transformations.switchMap(signInResponseMutableLiveData)
-    //    val asteroidList: LiveData<List<Asteroid>> = filter.switchMap {  ft ->
-    val asteroidList: LiveData<List<Asteroid>> = Transformations.switchMap(filter) {  ft ->
-        when (ft) {
+    val asteroidList: LiveData<List<Asteroid>> = Transformations.switchMap(filter) {  it ->
+        when (it) {
             Constants.FILTER_TODAY -> asteroidsRepository.getAsteroidsApproachingToday()
             Constants.FILTER_WEEK  -> asteroidsRepository.getAsteroidsStartToday()
             else -> asteroidsRepository.getAsteroidsAll()
         }
     }
 
-    // Live data to Asteroid List - old code
-    //private val _asteroidList = MutableLiveData<List<Asteroid>>()
-    //val asteroidList: LiveData<List<Asteroid>>
-    //    get() = _asteroidList
-
-    // TODO - LiveData for Astronomy Picture of the Day APOD
-    private val _apod= MutableLiveData<PictureOfDay?>()
-    val apod: LiveData<PictureOfDay?>
-        get() = _apod
-
+    // Astronomy Picture of the Day APOD LiveData
+    //private val _apod= MutableLiveData<PictureOfDay?>() //moved to Repo
+    val apod: LiveData<PictureOfDay> = asteroidsRepository.apod
 
     /**
      * Factory for constructing MainViewModel with parameter
