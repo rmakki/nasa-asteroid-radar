@@ -11,6 +11,7 @@
         <entry key="app/src/main/res/layout/list_item_asteroid.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_track.xml" value="0.1" />
         <entry key="app/src/main/res/layout/text_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/main_overflow_menu.xml" value="0.16041666666666668" />
       </map>
     </option>
   </component>

@@ -3,6 +3,7 @@ package com.udacity.asteroidradar.main
 import android.app.Application
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.repository.AsteroidsRepository
@@ -84,9 +85,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             asteroidsRepository.refreshAsteroids()
         }
     }
+   // Filter initialized to one week from today
+    var filter: MutableLiveData<String> = MutableLiveData(Constants.FILTER_WEEK)
 
-    // LiveData to AsteroidList, displays Asteroids from Today onwards when user open the app
-    val asteroidList = asteroidsRepository.getAsteroidsApproachingToday()
+    /**
+     * LiveData to AsteroidList, displays Asteroids from Today onwards as default when user opens the app
+     * Every time user selects from Menu, lambda function is triggered and asteroidList is updated
+     * Since asteroidList is a LiveData, then observers of the asteroidList- UI/RV - gets updated
+    */
+    // Transformations.switchMap(signInResponseMutableLiveData)
+    //    val asteroidList: LiveData<List<Asteroid>> = filter.switchMap {  ft ->
+    val asteroidList: LiveData<List<Asteroid>> = Transformations.switchMap(filter) {  ft ->
+        when (ft) {
+            Constants.FILTER_TODAY -> asteroidsRepository.getAsteroidsApproachingToday()
+            Constants.FILTER_WEEK  -> asteroidsRepository.getAsteroidsStartToday()
+            else -> asteroidsRepository.getAsteroidsAll()
+        }
+    }
 
     // Live data to Asteroid List - old code
     //private val _asteroidList = MutableLiveData<List<Asteroid>>()
@@ -100,7 +115,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     /**
-     * Factory for constructing DevByteViewModel with parameter
+     * Factory for constructing MainViewModel with parameter
      */
     class Factory(val app: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -111,9 +126,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             throw IllegalArgumentException("Unable to construct viewmodel")
         }
     }
-
-
-
 
 }
 

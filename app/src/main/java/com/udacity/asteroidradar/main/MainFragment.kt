@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 
@@ -68,14 +69,22 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
-
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_overflow_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    // update asteroid display depending on selected option
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        // filter LiveData triggers the update of the asteroidList LiveData
+        viewModel.filter.value =
+            when(item.itemId) {
+                R.id.show_week_menu -> Constants.FILTER_WEEK
+                R.id.show_today_menu -> Constants.FILTER_TODAY
+                else -> Constants.FILTER_ALL
+            }
         return true
+
     }
 }
