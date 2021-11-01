@@ -1,19 +1,14 @@
 package com.udacity.asteroidradar
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.main.AsteroidAdapter
-
-
 
 // layout properties app:apodImage
 @BindingAdapter("apodImage")

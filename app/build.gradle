@@ -81,6 +81,9 @@ dependencies {
     implementation "androidx.room:room-runtime:2.2.5"
     kapt "androidx.room:room-compiler:2.2.5"
 
+    implementation "android.arch.work:work-runtime-ktx:$version_work"
+
+
     implementation "android.arch.work:work-runtime-ktx:1.0.1"
 
     testImplementation 'junit:junit:4.13'

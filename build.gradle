@@ -7,6 +7,8 @@ buildscript {
         kotlin_version = "1.5.10"
         version_retrofit = "2.9.0"
         version_moshi = "1.9.3"
+        version_work = "2.6.0"
+
 
     }
 
