@@ -1,30 +1,46 @@
 package com.udacity.asteroidradar
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.main.AsteroidAdapter
+
+
 
 // layout properties app:apodImage
 @BindingAdapter("apodImage")
 fun bindImage(imageView: ImageView, apod: PictureOfDay?) {
-    if (apod != null) {
-        Picasso.get()
-            .load(apod.url)
-            .placeholder(R.drawable.placeholder_picture_of_day)
-            .into(imageView)
-        imageView.contentDescription = apod.title
-    } else {
-        imageView.setImageResource(R.drawable.placeholder_picture_of_day)
+    // custom animated placeholder to use with Picasso
+    // https://stackoverflow.com/questions/24826459/animated-loading-image-in-picasso
+    val circularProgressDrawable = CircularProgressDrawable(imageView.context)
+    circularProgressDrawable.apply {
+        strokeWidth = 5f
+        centerRadius = 30f
+        setColorSchemeColors(Color.WHITE)
+        start()
     }
+     Picasso.get()
+            .load(apod?.url)
+            //.placeholder(R.drawable.placeholder_picture_of_day)
+            .placeholder(circularProgressDrawable)
+            .into(imageView)
+    imageView.contentDescription = apod?.title
+}
 
-    //Picasso.get()
-    //     .load(url)
-    //     .resize(50, 50)
-    //     .centerCrop()
-    //     .into(imageView)
+/**
+ * Binding adapter used to hide the spinner once data is available
+ */
+@BindingAdapter("goneIfNotNull")
+fun goneIfNotNull(view: View, it: Any?) {
+    view.visibility = if (it != null) View.GONE else View.VISIBLE
 }
 
 // layout attribute app:listData
