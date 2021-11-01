@@ -110,7 +110,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val apod: LiveData<PictureOfDay> = asteroidsRepository.apod
 
     /**
+     * No need to create a Factory with a custom Application parameter because I am using AndroidViewModel, which
+     * supports it by default. Code works either way.
+     * Keeping this code for now to showcase how to use it in case I want to implement a custom Repo parameter
+     *
      * Factory for constructing MainViewModel with parameter
+     *
      */
     class Factory(val app: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {

@@ -39,7 +39,6 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
         today = nextWeekDates[0]    // date today
         nextWeek = nextWeekDates[1] // date one week from today
 
-        //_apod.postValue(PictureOfDay("","",""))
     }
     /**
      * Refresh the asteroids stored in the offline cache.
@@ -117,7 +116,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
         // send GET request to server - coroutine to avoid blocking the UI thread
         withContext(Dispatchers.IO) {
 
-            // set initial status
+            // set initial status - To work on later for better logging of the status
             //_statusApod.postValue(NetApiStatus.LOADING)
 
             // Network request
