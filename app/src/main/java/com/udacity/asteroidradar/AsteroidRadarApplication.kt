@@ -4,6 +4,8 @@ import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.work.*
+import com.udacity.asteroidradar.database.AsteroidsDatabase
+import com.udacity.asteroidradar.repository.AsteroidsRepository
 import com.udacity.asteroidradar.work.RefreshDataWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +17,13 @@ import java.util.concurrent.TimeUnit
  */
 
 class AsteroidRadarApplication: Application() {
+
+    // instantiate database as singleton
+    // Advanced way is to use Dependency Injection Libraries like Dagger or KOIN
+    private val database by lazy { AsteroidsDatabase.getDatabase(this) }
+
+    // instantiate repository to be re-used across the app
+    val repository by lazy { AsteroidsRepository(database.asteroidDao) }
 
     val applicationScope = CoroutineScope(Dispatchers.Default)
     // initialization function that does not block the main thread
@@ -34,6 +43,7 @@ class AsteroidRadarApplication: Application() {
     private fun setupRecurringWork() {
         // Constraints to prevent work from occurring
         // when there is no network access or the device is low on battery.
+        // WIFI, charging ...
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.UNMETERED)
             .setRequiresBatteryNotLow(true)

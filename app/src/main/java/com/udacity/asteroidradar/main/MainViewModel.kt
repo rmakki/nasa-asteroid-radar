@@ -1,11 +1,9 @@
 package com.udacity.asteroidradar.main
 
-import android.app.Application
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.PictureOfDay
-import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.repository.AsteroidsRepository
 import kotlinx.coroutines.launch
 
@@ -16,11 +14,14 @@ import kotlinx.coroutines.launch
  * work such as fetching network results can continue through configuration changes and deliver
  * results after the new Fragment or Activity is available.
  *
- * @param application The application that this viewmodel is attached to, it's safe to hold a
- * reference to applications across rotation since Application is never recreated during actiivty
- * or fragment lifecycle events.
+ * @param repo custom parameter, datasource for this ViewModel, Singleton lazy initialized in the Application file to be reused across the app
+ * Advanced way is to use Dependency Injection libraries like Dagger or Koin
+ *
  */
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(private val asteroidsRepository: AsteroidsRepository) : ViewModel() {
+
+// old code with application param, safe to hold a reference to applications across rotation since Application is never recreated during activity  or fragment lifecycle events.
+//  class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * Request a toast by setting this value to true.
@@ -51,7 +52,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      *
      * This is private because we don't want to expose setting this value to the Fragment.
      * If this is non-null, immediately navigate to [.detail.DetailFragment] and call [onAsteroidDetailsClicked]
-
      */
 
     private val _navigateToAsteroidDetails = MutableLiveData<Asteroid>()
@@ -73,8 +73,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _navigateToAsteroidDetails.value = null
     }
 
-    private val database = getDatabase(application)
-    private val asteroidsRepository = AsteroidsRepository(database)
+    // Old code - initialization is now AsteroidRadarApplication.kt to reuse the the Singleton via DependencyInjection
+    //private val database = getDatabase(application)
+    //private val asteroidsRepository = AsteroidsRepository(database)
 
     /**
      * init{} is called immediately when this ViewModel is created.
@@ -93,7 +94,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var filter: MutableLiveData<String> = MutableLiveData(Constants.FILTER_WEEK)
 
     /**
-     * LiveData to AsteroidList, displays Asteroids from Today onwards (from the cahe)as default when user opens the app
+     * LiveData to AsteroidList, displays Asteroids from Today onwards (from the cache)as default when user opens the app
      * Every time user selects from Menu, lambda function is triggered and asteroidList is updated
      * Since asteroidList is a LiveData, then observers of the asteroidList- UI/RV - gets updated
     */
@@ -109,23 +110,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     //private val _apod= MutableLiveData<PictureOfDay?>() //moved to Repo
     val apod: LiveData<PictureOfDay> = asteroidsRepository.apod
 
+
     /**
-     * No need to create a Factory with a custom Application parameter because I am using AndroidViewModel, which
-     * supports it by default. Code works either way.
-     * Keeping this code for now to showcase how to use it in case I want to implement a custom Repo parameter
-     *
-     * Factory for constructing MainViewModel with parameter
-     *
+     * Factory for constructing MainViewModel with injected repository parameter
      */
-    class Factory(val app: Application) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    class MainViewModelFactory(private val repository: AsteroidsRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return MainViewModel(app) as T
+                return MainViewModel(repository) as T
             }
-            throw IllegalArgumentException("Unable to construct viewmodel")
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 
+    /*
+     * Old code that used custom Application parameter
+     * No need to create a Factory with a custom Application parameter because I am extending
+     * AndroidViewModel, which supports it by default. Code works either way.
+     * Keeping it for reference purposes
+     * Factory for constructing MainViewModel with parameter
+     *
+     */
+    //class Factory(val app: Application) : ViewModelProvider.Factory {
+    //    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    //        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+    //            @Suppress("UNCHECKED_CAST")
+    //            return MainViewModel(app) as T
+    //        }
+    //        throw IllegalArgumentException("Unable to construct viewmodel")
+    //    }
+    //}
 }
 

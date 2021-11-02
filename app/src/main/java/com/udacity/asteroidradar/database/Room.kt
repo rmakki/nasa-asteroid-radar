@@ -36,20 +36,26 @@ interface AsteroidDao {
 abstract class AsteroidsDatabase : RoomDatabase() {
     // DB reference to the DAO
     abstract val asteroidDao: AsteroidDao
-}
 
-// Singleton
-private lateinit var INSTANCE: AsteroidsDatabase
+    companion object {
 
-fun getDatabase(context: Context): AsteroidsDatabase {
-    // Thread safe
-    synchronized(AsteroidsDatabase::class.java) {
-        // Check whether the database has been initialized
-        if (!::INSTANCE.isInitialized) {
-            INSTANCE = Room.databaseBuilder(context.applicationContext,
-                AsteroidsDatabase::class.java,
-                "asteroids").build()
+        // Singleton
+        private lateinit var INSTANCE: AsteroidsDatabase
+
+        fun getDatabase(context: Context): AsteroidsDatabase {
+            // Thread safe
+            synchronized(AsteroidsDatabase::class.java) {
+                // Check whether the database has been initialized
+                if (!::INSTANCE.isInitialized) {
+                    INSTANCE = Room.databaseBuilder(context.applicationContext,
+                        AsteroidsDatabase::class.java,
+                        "asteroids").build()
+                }
+            }
+            return INSTANCE
         }
+
     }
-    return INSTANCE
 }
+
+

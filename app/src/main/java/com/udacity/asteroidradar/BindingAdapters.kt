@@ -13,9 +13,11 @@ import com.udacity.asteroidradar.main.AsteroidAdapter
 // layout properties app:apodImage
 @BindingAdapter("apodImage")
 fun bindImage(imageView: ImageView, apod: PictureOfDay?) {
+
     // custom animated placeholder to use with Picasso
     // https://stackoverflow.com/questions/24826459/animated-loading-image-in-picasso
     val circularProgressDrawable = CircularProgressDrawable(imageView.context)
+
     circularProgressDrawable.apply {
         strokeWidth = 5f
         centerRadius = 30f

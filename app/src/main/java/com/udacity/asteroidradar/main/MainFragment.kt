@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import com.udacity.asteroidradar.AsteroidRadarApplication
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
@@ -16,16 +17,29 @@ class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
 
     // Old code - initializing MainViewModel without the new parameter
+    // this works too since MainViewModel extends AndroidViewModel
     //private val viewModel: MainViewModel by lazy {
     //    ViewModelProvider(this).get(MainViewModel::class.java)
     //}
 
+    // This is not necessary, above code works. Only a must if I want a custom parameter
+    // other than Application like repo...
     private val viewModel: MainViewModel by lazy {
         //ViewModelProvider(this).get(MainViewModel::class.java)
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onViewCreated()"
         }
-        ViewModelProvider(this,MainViewModel.Factory((activity.application))).get(MainViewModel::class.java)
+
+        // use ViewModel factory function defined in ViewModel to get a reference to the
+        // ViewModel with 'application' as parameter
+        ViewModelProvider(
+            this,
+            MainViewModel.MainViewModelFactory(
+                (activity.application as AsteroidRadarApplication).repository
+            )
+        ).get(MainViewModel::class.java)
+
+        //ViewModelProvider(this,MainViewModel.Factory((activity.application))).get(MainViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +47,7 @@ class MainFragment : Fragment() {
 
 
         binding = FragmentMainBinding.inflate(inflater, container, false )
+
         // scoped to the lifecycle of this Fragment
         binding.lifecycleOwner = this
 
@@ -63,6 +78,8 @@ class MainFragment : Fragment() {
         binding.asteroidRecycler.adapter = adapter
 
          //Moved to BindingAdapters
+        // This is not necessary because we want to avoid the need to add
+        // extra processing on the list in BindingAdapters. Works better for other simple views like Text
         /**
         viewModel.asteroidList.observe(viewLifecycleOwner, Observer {
 

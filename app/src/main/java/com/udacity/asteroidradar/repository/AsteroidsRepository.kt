@@ -13,6 +13,7 @@ import com.udacity.asteroidradar.network.AsteroidApi
 import com.udacity.asteroidradar.network.NetworkAsteroidContainer
 import com.udacity.asteroidradar.network.asDomainModel
 import com.udacity.asteroidradar.api.getDownloadDates
+import com.udacity.asteroidradar.database.AsteroidDao
 import com.udacity.asteroidradar.network.AsteroidApi.retrofitMoshiService
 import com.udacity.asteroidradar.network.asDatabaseModel
 import kotlinx.coroutines.withContext
@@ -20,8 +21,10 @@ import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 
 
-// Pass DB in constructor to avoid memory leaks. Dependency injection
-class AsteroidsRepository(private val database: AsteroidsDatabase) {
+// Pass Dao in constructor to avoid memory leaks. Dependency injection
+class AsteroidsRepository(private val asteroidDao: AsteroidDao) {
+
+//class AsteroidsRepository(private val database: AsteroidsDatabase) {
 
     // LiveData for Astronomy Picture of the Day
     private val _apod= MutableLiveData<PictureOfDay>()
@@ -64,7 +67,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
                             NetworkAsteroidContainer(response.body().toString()).asDomainModel()
                         Log.i("POJO size of Asteroids retrieved:", asteroidList.size.toString())
                         // Write to the cash
-                        database.asteroidDao.insertAll(*asteroidList.asDatabaseModel())
+                        asteroidDao.insertAll(*asteroidList.asDatabaseModel())
 
                     } else {
                         Log.e("Network response problem : ", response.message() )
@@ -82,7 +85,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
     fun getAsteroidsStartToday(): LiveData<List<Asteroid>> {
         Log.i("getAsteroidsStartToday", "Get Asteroids Week from DB")
 
-        return Transformations.map(database.asteroidDao.getAsteroidsAfterDate(today)) {
+        return Transformations.map(asteroidDao.getAsteroidsAfterDate(today)) {
             it.asDomainModel()
         }
     }
@@ -92,7 +95,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
      */
     fun getAsteroidsApproachingToday(): LiveData<List<Asteroid>> {
         Log.i("getAsteroidsApproachingToday", "Get Asteroids Today from DB")
-        return Transformations.map(database.asteroidDao.getAsteroidsToday(today)) {
+        return Transformations.map(asteroidDao.getAsteroidsToday(today)) {
             it.asDomainModel()
         }
     }
@@ -102,10 +105,17 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
      */
     fun getAsteroidsAll(): LiveData<List<Asteroid>> {
         Log.i("getAsteroidsAll", "Get All Asteroids from DB")
-        return Transformations.map(database.asteroidDao.getAllAsteroids()) {
+        return Transformations.map(asteroidDao.getAllAsteroids()) {
                     it.asDomainModel()
                 }
     }
+
+    // A list of all asteroids that can be shown on the screen - Did the function above instead, which
+    // approach is better?
+    //val asteroids: LiveData<List<Asteroid>> =
+    //    Transformations.map(database.asteroidDao.getAllAsteroids()) {
+    //        it.asDomainModel()
+    //    }
 
     /**
      * Refresh Astronomy Picture of the Day apod in the offline cache.
@@ -116,16 +126,12 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
         // send GET request to server - coroutine to avoid blocking the UI thread
         withContext(Dispatchers.IO) {
 
-            // set initial status - To work on later for better logging of the status
-            //_statusApod.postValue(NetApiStatus.LOADING)
-
             // Network request
             try{
                 // GET
                 Log.i("Refresh apod : ","Refresh apod - sending GET request")
                 val response: Response<PictureOfDay> =
                     retrofitMoshiService.getPictureOfDay(Constants.NASA_API_KEY)
-
 
                 if (response.isSuccessful) {
                     response.body()?.let {
@@ -134,25 +140,16 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
                     }
                 }
 
-                // set status to keep UI updated
-                //_statusApod.postValue(NetApiStatus.DONE)
                 Log.i("Refresh apod: ","apod GET request success")
 
             } catch (e: Exception) {
 
-                // error
-                //_apod.postValue(null)
-               // _statusApod.postValue(NetApiStatus.ERROR)
                 Log.i("Refresh apod Exception: ", e.stackTraceToString())
             }
         }
     }
 
-    // A list of all asteroids that can be shown on the screen - Did the function above instead
-    //val asteroids: LiveData<List<Asteroid>> =
-    //    Transformations.map(database.asteroidDao.getAllAsteroids()) {
-    //        it.asDomainModel()
-    //    }
+
 
 }
 
