@@ -20,7 +20,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 
-
 // Pass Dao in constructor to avoid memory leaks. Dependency injection
 class AsteroidsRepository(private val asteroidDao: AsteroidDao) {
 
@@ -46,7 +45,7 @@ class AsteroidsRepository(private val asteroidDao: AsteroidDao) {
     /**
      * Refresh the asteroids stored in the offline cache.
      *
-     * This function uses the IO dispatcher to ensure the database insert database operation
+     * This function uses the IO dispatcher to ensure the data                                                                                                                                                                                                                                                                                                                         base insert database operation
      * happens on the IO dispatcher. By switching to the IO dispatcher using `withContext` this
      * function is now safe to call from any thread including the Main thread.
      *
@@ -148,9 +147,6 @@ class AsteroidsRepository(private val asteroidDao: AsteroidDao) {
             }
         }
     }
-
-
-
 }
 
 /**

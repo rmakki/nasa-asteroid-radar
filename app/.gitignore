@@ -1,1 +1,27 @@
+*.iml
+.gradle
+/local.properties
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+.DS_Store
 /build
+/captures
+.externalNativeBuild
+
+proguard/
+*.iml
+# Log Files
+*.log
+
+app/app.iml
+app/proguard-rules.pro
+app/.DS_Store
+app/app-release.apk
+app/manifest-merger-release-report.txt
+*.dex
+*.class
+bin/
+gen/
+.idea/
+app/build

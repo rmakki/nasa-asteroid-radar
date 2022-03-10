@@ -22,7 +22,7 @@ class MainFragment : Fragment() {
     //    ViewModelProvider(this).get(MainViewModel::class.java)
     //}
 
-    // This is not necessary, above code works. Only a must if I want a custom parameter
+    // Above code works. Only a must if I want a custom parameter
     // other than Application like repo...
     private val viewModel: MainViewModel by lazy {
         //ViewModelProvider(this).get(MainViewModel::class.java)

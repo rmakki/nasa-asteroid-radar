@@ -69,7 +69,11 @@ interface AsteroidApiService {
 
 /**
  * A public Api object that exposes the lazy-initialized Retrofit service
+ *
+ * Kotlin Singleton class. No constructor. The object will be instantiated and its init block if any
+ will be executed lazily upon first access, in a thread-safe way
  */
+
 object AsteroidApi {
 val retrofitServiceScalar : AsteroidApiService by lazy {
     retrofitScalar.create(AsteroidApiService::class.java)
@@ -77,7 +81,6 @@ val retrofitServiceScalar : AsteroidApiService by lazy {
     val retrofitMoshiService : AsteroidApiService by lazy {
         retrofitMoshi.create(AsteroidApiService::class.java)
     }
-
 }
 
 
